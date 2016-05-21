@@ -48,7 +48,7 @@ LFLAGS =
 all: $(BIN)
 
 $(BIN): $(OBJ)
-	@echo "Linking $@..."
+	@echo "Linking $(BIN)..."
 	@$(CC) $(LFLAGS) -o $@ $^
 
 %.o: %.c
@@ -56,7 +56,7 @@ $(BIN): $(OBJ)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 install: $(BIN)
-	@echo "Installing $^..."
+	@echo "Installing $(BIN)..."
 	$(CP) $< $(DESTDIR)/bin
 
 clean:
