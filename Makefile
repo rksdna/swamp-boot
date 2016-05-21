@@ -1,5 +1,5 @@
 #
-# Swamp-boot
+# Swamp-boot - flash memory programming for the STM32 microcontrollers
 # Copyright (c) 2016 rksdna, fasked
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
