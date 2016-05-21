@@ -418,7 +418,7 @@ static int set_trace_size(const char *size)
     return sscanf(size, "%d", &trace_size) == 1 && trace_size >= 1 ? DONE : INVALID_OPTIONS_ARGUMENT;
 }
 
-static int trace_device(void)
+static int trace_device_console(void)
 {
     int result;
     int count = 0;
@@ -446,9 +446,15 @@ static int trace_device(void)
         base = time(0);
     }
 
-    fprintf(stdout, device_buffer[0] != '\n' ? TTY_NONE "\nReadout protecting..." : TTY_NONE "Readout protecting...");
-
     return DONE;
+}
+
+static int trace_device(void)
+{
+    int result = trace_device_console();
+
+    fprintf(stdout, TTY_NONE "Tracing...");
+    return result;
 }
 
 static int disconnect_device(void)
