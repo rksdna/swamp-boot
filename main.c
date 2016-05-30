@@ -96,7 +96,7 @@ static int reset_device(int boot)
     return DONE;
 }
 
-static int handshake_device(void)
+static int try_to_handshake_device(void)
 {
     int result;
 
@@ -115,6 +115,17 @@ static int handshake_device(void)
         return result;
 
     return device_buffer[0] == 0x79 ? DONE : INVALID_DEVICE_REPLY;
+}
+
+static int handshake_device(void)
+{
+    int result;
+    int count = 5;
+
+    while (count-- && (result = try_to_handshake_device()))
+        continue;
+
+    return result;
 }
 
 static uint8_t device_checksum(uint8_t *data, size_t size)
