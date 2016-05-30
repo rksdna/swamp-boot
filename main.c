@@ -32,6 +32,10 @@
 #include "serial.h"
 #include "options.h"
 
+#ifndef VERSION
+#define VERSION 0
+#endif
+
 struct device
 {
     uint16_t pid;
@@ -516,7 +520,7 @@ int main(int argc, char* argv[])
 
     static char stdout_buffer[256];
     setvbuf(stdout, stdout_buffer, _IOLBF, sizeof(stdout_buffer));
-    fprintf(stdout, TTY_NONE "Swamp-boot, version 1.00\n");
+    fprintf(stdout, TTY_NONE "Swamp-boot, version 0.%d\n", VERSION);
 
     return invoke_options(TTY_BOLD "swamp-boot" TTY_NONE " [" TTY_UNLN "OPTIONS" TTY_NONE "] ", options, errors, argc, argv);
 }

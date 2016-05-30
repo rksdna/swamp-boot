@@ -36,7 +36,9 @@ CC = gcc
 CP = cp
 RM = rm -f
 
-CFLAGS = -Wall -MD
+VERSION = $(shell git rev-list --count master)
+
+CFLAGS = -Wall -MD -DVERSION=$(VERSION)
 LFLAGS =
 
 -include $(DEP)
