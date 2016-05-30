@@ -6,7 +6,7 @@ Write `cdc.hex` the file through `/dev/ttyUSB0` example call:
 ```
 swamp-boot -c /dev/ttyUSB0 -e -w cdc.hex -t -d
 
-Swamp-boot, version 1.00
+Swamp-boot, version 0.9
 Connect "/dev/ttyUSB0"...V3.1...PID0445... done
 Erasing... done
 Writing from "cdc.hex"... done
