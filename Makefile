@@ -41,8 +41,6 @@ VERSION = $(shell git rev-list --count master)
 CFLAGS = -Wall -MD -DVERSION=$(VERSION)
 LFLAGS =
 
--include $(DEP)
-
 # Targets
 
 .PHONY: all clean install
@@ -65,3 +63,4 @@ clean:
 	@echo "Cleaning..."
 	$(RM) $(OBJ) $(DEP) $(BIN)
 
+-include $(DEP)
