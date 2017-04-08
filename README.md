@@ -1,4 +1,5 @@
-#Swamp-boot
+# Swamp-boot
+
 flash memory programming for the STM32 microcontrollers. Uses signals RTS and DTR to reset the microcontroller and select the boot mode. Provides forwarding controller console output to the standard output for interfacing with IDE.
 
 Write `cdc.hex` the file through `/dev/ttyUSB0` example call:
