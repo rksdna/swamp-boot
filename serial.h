@@ -25,6 +25,7 @@
 #define SERIAL_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 int open_serial_port(const char *file);
 int close_serial_port(void);
@@ -33,6 +34,7 @@ int write_serial_port(const void *data, size_t size);
 int read_serial_port(void *data, size_t size);
 int flush_serial_port(void);
 
+int configure_serial_port(int timeout);
 int control_serial_port(int rts, int dtr);
 int wait_serial_port(int ms);
 

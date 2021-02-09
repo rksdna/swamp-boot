@@ -138,6 +138,16 @@ int flush_serial_port(void)
     return DONE;
 }
 
+int configure_serial_port(int timeout)
+{
+    active_options.c_cc[VTIME] = timeout;
+
+    if (tcsetattr(fd, TCSANOW, &active_options) < 0)
+        return INTERNAL_ERROR;
+
+    return DONE;
+}
+
 int control_serial_port(int rts, int dtr)
 {
     active_status &= ~(TIOCM_RTS | TIOCM_DTR);

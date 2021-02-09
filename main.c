@@ -57,6 +57,7 @@ static const struct device devices[] =
     {0x0428, 0x00080000, "F10xxx high-density value line"},
     {0x0418, 0x00040000, "F105xx/107xx"},
     {0x0430, 0x00100000, "F10xxx extra-density"},
+    {0x0423, 0x00040000, "F401xB/401xC"},
 };
 
 static const char *modes[] =
@@ -126,8 +127,14 @@ static int handshake_device(void)
     int result;
     int count = 5;
 
+    if ((result = configure_serial_port(1)))
+        return result;
+
     while (count-- && (result = try_to_handshake_device()))
         continue;
+
+    if ((result = configure_serial_port(50)))
+        return result;
 
     return result;
 }
@@ -300,7 +307,7 @@ static int read_device_memory(const struct buffer *buffer)
         if ((result = device_request(1)))
             return result;
 
-        if ((result = read_serial_port(data, size)))
+        if ((result = read_serial_port(data, count)))
             return result;
 
         size -= count;
@@ -343,6 +350,33 @@ static int erase_device(void)
     device_buffer[0] = 0xFF;
     device_buffer[1] = 0xFF;
     if ((result = device_request(device_erase_command == 0x44 ? 2 : 1)))
+        return result;
+
+    return DONE;
+}
+
+static int adjust_device(const char *mode)
+{
+    int result;
+    const uint8_t voltage = atoi(mode);
+
+    fprintf(stdout, TTY_NONE "Adjust voltage \"%d\"...", voltage);
+
+    device_buffer[0] = 0x31;
+    if ((result = device_request(1)))
+        return result;
+
+    device_buffer[0] = 0xFF;
+    device_buffer[1] = 0xFF;
+    device_buffer[2] = 0x00;
+    device_buffer[3] = 0x00;
+    if ((result = device_request(4)))
+        return result;
+
+    device_buffer[0] = 0;
+    device_buffer[1] = voltage;
+
+    if ((result = device_request(2)))
         return result;
 
     return DONE;
@@ -494,6 +528,7 @@ int main(int argc, char* argv[])
         {PLAIN_OPTION, "u", "unprotect", "Erase and read-out unprotect device memory", unprotect_device},
         {JOINT_OPTION, "r", "read", "Read data from device memory to file", read_device},
         {PLAIN_OPTION, "e", "erase", "Erase device memory", erase_device},
+        {JOINT_OPTION, "a", "adjust", "Adjust device voltage: 0 - [1.8 V, 2.1 V], 1 - [2.1 V, 2.4 V], 2 - [2.4 V, 2.7 V], 3 - [2.7 V, 3.6 V], 4 - [2.7 V, 3.6 V] with Vpp", adjust_device},
         {JOINT_OPTION, "w", "write", "Write data from file to device memory", write_device},
         {PLAIN_OPTION, "p", "protect", "Read-out protect device memory", protect_device},
         {JOINT_OPTION, 0, "trace-time", "Set trace intercharacter interval in seconds (5 default)", set_trace_time},
