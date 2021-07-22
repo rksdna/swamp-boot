@@ -59,6 +59,7 @@ static const struct device devices[] =
     {0x0418, 0x00040000, "F105xx/107xx"},
     {0x0430, 0x00100000, "F10xxx extra-density"},
     {0x0423, 0x00040000, "F401xB/401xC"},
+    {0x0641, 0x00020000, "Experimental"},
 };
 
 static const char *modes[] =
@@ -73,6 +74,7 @@ static const char *modes[] =
 
 static int rts_mode = 2;
 static int dtr_mode = 0;
+static int experimental = 0;
 static int trace_size = 4096;
 static int trace_time = 5;
 static const struct device *selected_device = devices;
@@ -224,6 +226,13 @@ static int select_dtr_mode(const char *mode)
     return select_mode(mode, &dtr_mode);
 }
 
+static int experimental_mode(void)
+{
+    fprintf(stdout, TTY_NONE "Selecting experimental device...");
+    experimental = 1;
+    return DONE;
+}
+
 static int connect_device(const char *file)
 {
     int result;
@@ -254,11 +263,22 @@ static int connect_device(const char *file)
     if ((result = device_request(1)))
         return result;
 
-    if ((result = device_response(3)))
-        return result;
+    if (experimental)
+    {
+        if ((result = device_response(5)))
+            return result;
 
-    if ((result = select_device(device_buffer[1] << 8 | device_buffer[2])))
-        return result;
+        if ((result = select_device(device_buffer[1] << 8 | device_buffer[2])))
+            return result;
+    }
+    else
+    {
+        if ((result = device_response(3)))
+            return result;
+
+        if ((result = select_device(device_buffer[1] << 8 | device_buffer[2])))
+            return result;
+    }
 
     return DONE;
 }
@@ -525,6 +545,7 @@ int main(int argc, char* argv[])
     {
         {JOINT_OPTION, 0, "rts", "Select RTS mode: reset - for device RESET, nreset - for inverted device RESET, boot - for device BOOT0 (default), nboot - for inverted device BOOT0, set - stay at high level, clear - stay at low level", select_rts_mode},
         {JOINT_OPTION, 0, "dtr", "Select DTR mode: reset - for device RESET (default), nreset - for inverted device RESET, boot - for device BOOT0, nboot - for inverted device BOOT0, set - stay at high level, clear - stay at low level", select_dtr_mode},
+        {PLAIN_OPTION, "x", "experimental", "Experimental mode", experimental_mode},
         {JOINT_OPTION, "c", "connect", "Open serial port and connect to device bootloader", connect_device},
         {PLAIN_OPTION, "u", "unprotect", "Erase and read-out unprotect device memory", unprotect_device},
         {JOINT_OPTION, "r", "read", "Read data from device memory to file", read_device},
